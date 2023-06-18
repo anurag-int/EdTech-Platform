@@ -26,11 +26,6 @@ const userSchema = new mongoose.Schema({
         enum : ["Student", "Instructor", "Admin"],
         required : true
     },
-    confirmPassword : {
-        type : String,
-        required : true,
-        trim : true
-    },
     additionalDetails : {
         type : mongoose.Schema.Types.ObjectId,
         required : true,
