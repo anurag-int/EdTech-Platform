@@ -27,7 +27,7 @@ async function sendVerificationEmail(email, otp){
     }
 }
 
-// saving otp into our Database
+// sending OTP in mail before saving into database.
 OTPSchema.pre("save", async function(next){
     await sendVerificationEmail(this.email, this.otp);
     next();
