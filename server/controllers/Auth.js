@@ -3,6 +3,9 @@ const OTP = require("../models/OTP");
 const otpGenerator = require("otp-generator");
 const { response } = require("express");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
+
 
 //OTP sender
 exports.sendOTP = async (req, res) => {
@@ -161,6 +164,92 @@ exports.signUp = async (req, res) => {
   }
 };
 
-// login
+
+
+
+// login Algorithm
+
+  // get data from req body
+  // validation data
+  // user check exist or not
+  // generate JWT, after Password Matching
+  // create cookie and send response
+
+exports.login = async (req, res)=>{
+    
+
+  try{
+    const {email, password} = req.body;
+    
+    if(!email || !password)
+    {
+      return res.status(403).json({
+        success : false,
+        message : "Fill the required details"
+      })
+    }
+
+    //email validation
+    const user = await User.findOne({email});
+    if(!user)
+    {
+        return res.status(401).json({
+          success : false,
+          message : "User not exists"
+        })
+    }
+
+    if(await bcrypt.compare(password, user.password))
+    {
+
+      const payload = {
+        email : user.email,
+        id: user._id,
+        role : user.role,
+      }
+        const token = jwt.sign(payload, process.env.JWT_SECRET, {
+          expiresIn : "2h"
+        });
+        
+        user.token = token;
+        user.password = undefined;
+
+        const options = {
+          expires : new Date(Date.now() + 3*24*60*60*1000),
+          httpOnly : true
+        }
+
+        res.cookie("token", token, options).status(200).json({
+          success : true,
+          token,
+          user,
+          message : "Logged in Successfully"
+        })
+    }
+
+    else
+    {
+      return res.status(401).json({
+        success : false,
+        message : "Incorrect Password"
+      })
+    }
+
+
+
+  }
+
+  catch(error){
+      return res.status(500).json({
+        success : false,
+        message : "Login Failure Please Try Again"
+      })
+  }
+
+
+}
+
+
+
 
 //Change Password
