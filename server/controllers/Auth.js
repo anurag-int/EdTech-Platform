@@ -5,7 +5,7 @@ const { response } = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-
+const nodemailer = require("nodemailer");
 
 //OTP sender
 exports.sendOTP = async (req, res) => {
@@ -150,106 +150,151 @@ exports.signUp = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "User Successfully Registered",
-      user
+      user,
     });
-  } 
-
-  catch (error) 
-  {
+  } catch (error) {
     console.log(error);
     return res.status(500).json({
-        success : false,
-        message : "Please Try Again..."
-    })
+      success: false,
+      message: "Please Try Again...",
+    });
   }
 };
 
-
-
-
 // login Algorithm
 
-  // get data from req body
-  // validation data
-  // user check exist or not
-  // generate JWT, after Password Matching
-  // create cookie and send response
+// get data from req body
+// validation data
+// user check exist or not
+// generate JWT, after Password Matching
+// create cookie and send response
 
-exports.login = async (req, res)=>{
-    
+exports.login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-  try{
-    const {email, password} = req.body;
-    
-    if(!email || !password)
-    {
+    if (!email || !password) {
       return res.status(403).json({
-        success : false,
-        message : "Fill the required details"
-      })
+        success: false,
+        message: "Fill the required details",
+      });
     }
 
     //email validation
-    const user = await User.findOne({email});
-    if(!user)
-    {
-        return res.status(401).json({
-          success : false,
-          message : "User not exists"
-        })
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "User not exists",
+      });
     }
 
-    if(await bcrypt.compare(password, user.password))
-    {
-
+    if (await bcrypt.compare(password, user.password)) {
       const payload = {
-        email : user.email,
+        email: user.email,
         id: user._id,
-        role : user.role,
-      }
-        const token = jwt.sign(payload, process.env.JWT_SECRET, {
-          expiresIn : "2h"
-        });
-        
-        user.token = token;
-        user.password = undefined;
+        role: user.role,
+      };
+      const token = jwt.sign(payload, process.env.JWT_SECRET, {
+        expiresIn: "2h",
+      });
 
-        const options = {
-          expires : new Date(Date.now() + 3*24*60*60*1000),
-          httpOnly : true
-        }
+      user.token = token;
+      user.password = undefined;
 
-        res.cookie("token", token, options).status(200).json({
-          success : true,
-          token,
-          user,
-          message : "Logged in Successfully"
-        })
+      const options = {
+        expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+        httpOnly: true,
+      };
+
+      res.cookie("token", token, options).status(200).json({
+        success: true,
+        token,
+        user,
+        message: "Logged in Successfully",
+      });
+    } else {
+      return res.status(401).json({
+        success: false,
+        message: "Incorrect Password",
+      });
     }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Login Failure Please Try Again",
+    });
+  }
+};
 
-    else
-    {
+//Change Password Algorithm
+    // get data from req.body
+    // get oldPassword, newPassword, confirmNewPassword
+    // validation
+    // hash the password
+    // update password in DB
+    // send mail - password updated
+    // return response
+exports.changePassword = async (req, res) => {
+  const { email, currPassword, newPassword, confirmNewPassword } = req.body;
+
+  if (!currPassword || !newPassword || !confirmNewPassword || !email) {
+    return res.status(401).json({
+      success: false,
+      messsage: "Fill the required details",
+    });
+  }
+
+  if (newPassword !== confirmNewPassword) {
+    return res.status(401).json({
+      success: false,
+      message: "Password is not matching! Please try Again",
+    });
+  }
+
+  const user = await User.findOne({ email });
+  if(user)
+  if (await bcrypt.compare(currPassword, user.password)) {
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    const response = await User.findOneAndUpdate({ password: hashedPassword });
+
+    if (response) {
+      //transporter
+      let transporter = nodemailer.createTransport({
+        host: process.env.MAIL_HOST,
+        auth: {
+          user: process.env.MAIL_USER,
+          pass: process.env.MAIL_PASS,
+        },
+      });
+
+      //sending mail
+      let info = await transporter.sendMail({
+        from: `<H1>StudyMotion</H1>`,
+        to: email,
+        html: `<h2>Congratulations, Your password has Updated.</h2>`,
+      });
+      console.log("INFO", info);
+      console.log("Mail Send Successfully!");
+
+      return res.status(200).json({
+        success : true,
+        message : "Password is Successfully Updated"
+      })
+    } else {
+      return res.status(500).json({
+        success: false,
+        message: "Try Again...",
+      });
+    }
+  }
+  else
+  {
       return res.status(401).json({
         success : false,
-        message : "Incorrect Password"
-      })
-    }
-
-
-
-  }
-
-  catch(error){
-      return res.status(500).json({
-        success : false,
-        message : "Login Failure Please Try Again"
+        message : "Your old password doesn't match"
       })
   }
-
-
-}
-
-
-
-
-//Change Password
+};
