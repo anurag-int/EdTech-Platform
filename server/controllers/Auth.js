@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const nodemailer = require("nodemailer");
+const mailSender = require("../utils/mailSender");
 
 //OTP sender
 exports.sendOTP = async (req, res) => {
@@ -258,32 +259,26 @@ exports.changePassword = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    const response = await User.findOneAndUpdate({ password: hashedPassword });
+    const response = await User.findOneAndUpdate({email : email},
+                                                  {
+                                                    password : hashedPassword
+                                                  },
+                                                  {new : true});
 
-    if (response) {
-      //transporter
-      let transporter = nodemailer.createTransport({
-        host: process.env.MAIL_HOST,
-        auth: {
-          user: process.env.MAIL_USER,
-          pass: process.env.MAIL_PASS,
-        },
-      });
-
+    if (response) 
+    {
       //sending mail
-      let info = await transporter.sendMail({
-        from: `<H1>StudyMotion</H1>`,
-        to: email,
-        html: `<h2>Congratulations, Your password has Updated.</h2>`,
-      });
-      console.log("INFO", info);
-      console.log("Mail Send Successfully!");
+      await mailSender(email,
+                      "Study Motion",
+                      `Congratulation Your Password has been Changed.`)
 
       return res.status(200).json({
-        success : true,
-        message : "Password is Successfully Updated"
+        success : false,
+        message : "Your password has been changed"
       })
-    } else {
+    }
+    else
+    {
       return res.status(500).json({
         success: false,
         message: "Try Again...",
