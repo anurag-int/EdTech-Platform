@@ -1,6 +1,6 @@
 const User = require("../models/User");
 const mailSender = require("../utils/mailSender");
-
+const bcrypt = require("bcrypt");
 
 
 // Forget PasswordToken Algorithm
@@ -59,3 +59,73 @@ exports.resetPasswordToken = async (req, res)=>{
 
 //Forget Password
 
+        //data fetch
+        //data validation
+        //get user details in db from Token
+        // if no entry -- invalid token
+        // or if the token time expires or not if expired
+        // hash the password
+        // password update in the database
+        // return response
+
+exports.resetPassword = async (req, res) => {
+    try{
+        const {password, confirmPassword, token} = req.body;
+
+    if(!password || !confirmPassword)
+    {
+        return res.status(403).json({
+            success : false,
+            message : "Fill the required Details"
+        })
+    }
+
+    if(password !== confirmPassword)
+    {
+        return res.status(403).json({
+            success : false,
+            message : "Password doesn't match!"
+        })
+    }
+
+    const userDetails = await User.findOne({token : token});
+
+    if(!userDetails)
+    {
+        return res.status(403).json({
+            success : false,
+            message : "Invalid Token"
+        })
+    }
+
+    if(userDetails.resetPasswordExpires < Date.now())
+    {
+        return res.status(403).json({
+            success : false,
+            message : "Token is Expired, please re-generate your Token"
+        })
+    }
+
+    const hashedPassword = bcrypt.hash(password, 10);
+
+    await User.findOneAndUpdate({token:token},
+                                {
+                                    password : hashedPassword
+                                },
+                                {new : true}
+                                );
+
+    return res.status(200).json({
+        success : true,
+        message : "Your password has been updated Successfully."
+    })
+
+    }       
+    catch(error)
+    {
+        return res.status(500).json({
+            success : false,
+            message : "Something went wrong, Try Again..."
+        })
+    } 
+}
