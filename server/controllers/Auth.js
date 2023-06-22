@@ -14,7 +14,7 @@ exports.sendOTP = async (req, res) => {
     // fetching email from the request body
     const { email } = req.body;
 
-    const checkUserPresent = await User.findOne({ email });
+    const checkUserPresent = await User.findOne({email});
     if (checkUserPresent) {
       return res.status(401).json({
         success: false,
@@ -32,7 +32,7 @@ exports.sendOTP = async (req, res) => {
     console.log("OTP generated: ", otp);
 
     //check unique otp or not
-    const result = await OTP.findOne({ otp: otp });
+    const result = await OTP.findOne({otp: otp});
 
     // check till we got the unique OTP in DB.
     while (result) {
@@ -43,8 +43,8 @@ exports.sendOTP = async (req, res) => {
       });
     }
 
-    // Storing this OTP in our DataBase.
-    const otpPayload = { email, otp };
+    // Storing this OTP in the DataBase.
+    const otpPayload = {email, otp};
 
     // create an entry in DB for OTp
     const otpBody = await OTP.create(optPayload);
@@ -58,7 +58,7 @@ exports.sendOTP = async (req, res) => {
     console.log(err);
     return res.status(500).json({
       success: false,
-      message: error.message,
+      message: err.message,
     });
   }
 };
@@ -115,12 +115,14 @@ exports.signUp = async (req, res) => {
     //validate OTP from the User's OTP
 
     if (recentOtp.length == 0) {
-      // OTP not found
+        // OTP not found
       return response.status(400).json({
         success: false,
         message: "OTP not Found",
       });
-    } else if (otp !== recentOtp.otp) {
+    } 
+
+    else if (otp !== recentOtp.otp) {
       //Invalid OTP
       return res.status(400).json({
         success: false,
@@ -164,17 +166,18 @@ exports.signUp = async (req, res) => {
 
 // login Algorithm
 
-// get data from req body
-// validation data
-// user check exist or not
-// generate JWT, after Password Matching
-// create cookie and send response
+    // get data from req body
+    // validation data
+    // user check exist or not
+    // generate JWT, after Password Matching
+    // create cookie and send response
 
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password) {
+    if (!email || !password)
+    {
       return res.status(403).json({
         success: false,
         message: "Fill the required details",
@@ -254,7 +257,6 @@ exports.changePassword = async (req, res) => {
   }
 
   const user = await User.findOne({ email });
-  if(user)
   if (await bcrypt.compare(currPassword, user.password)) {
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -265,7 +267,7 @@ exports.changePassword = async (req, res) => {
                                                   },
                                                   {new : true});
 
-    if (response) 
+    if(response) 
     {
       //sending mail
       await mailSender(email,

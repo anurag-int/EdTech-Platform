@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+
 const OTPSchema = mongoose.Schema({
     email : {
         type : String,
