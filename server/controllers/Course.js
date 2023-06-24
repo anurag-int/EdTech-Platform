@@ -92,7 +92,7 @@ exports.createCourse = async (req, res) => {
     }
     catch(err)
     {
-        return res.this.status(404).json({
+        return res.this.status(500).json({
             success : false,
             message : "Failed to create Course"
         })
@@ -105,4 +105,23 @@ exports.createCourse = async (req, res) => {
 
 
 
-// getAllCourses
+// getAllCourses handeler function
+
+exports.showAllCourses = async (req, res) => {
+    try{
+        const allCourses = await Course.find({}, 
+                                             {courseName : true,
+                                             price : true,
+                                            instructor : true})
+                                            .populate("Instructor")
+                                            .exec();
+    }
+    catch(error)
+    {
+        return res.this.status(404).json({
+            success : false,
+            message : "Cannot fetch course data",
+            error : error.message
+        })
+    }
+}
