@@ -248,7 +248,7 @@ exports.changePassword = async (req, res) => {
       messsage: "Fill the required details",
     });
   }
-
+  
   if (newPassword !== confirmNewPassword) {
     return res.status(401).json({
       success: false,
@@ -256,7 +256,7 @@ exports.changePassword = async (req, res) => {
     });
   }
 
-  const user = await User.findOne({ email });
+  const userId = await User.findOne({ email });
   if (await bcrypt.compare(currPassword, user.password)) {
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -291,7 +291,7 @@ exports.changePassword = async (req, res) => {
   {
       return res.status(401).json({
         success : false,
-        message : "Your old password doesn't match"
+        message : "Old password doesn't match"
       })
   }
 };

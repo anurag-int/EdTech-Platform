@@ -1,6 +1,5 @@
 const Tag = require("../models/tags");
 
-
 // createTag Algorithm
 
         //fetch the data
@@ -59,7 +58,7 @@ exports.showAlltags = async(req, res)=>{
     {
         return res.status(500).json({
             success : false,
-            message : error.message
+            message : err.message
         })
     }
 }

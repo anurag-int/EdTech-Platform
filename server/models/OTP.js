@@ -17,7 +17,7 @@ const OTPSchema = mongoose.Schema({
     }
 });
 
-//a function ---> to send email
+// function ---> to send email
 async function sendVerificationEmail(email, otp){
     try {
         const mailResponse = await mailSender(email, "Verification Email from StudyMotion", otp);
