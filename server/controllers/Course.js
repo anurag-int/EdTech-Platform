@@ -18,7 +18,7 @@ exports.createCourse = async (req, res) => {
 
             //validation
             if(!courseName || !courseDescription || !whatYouWillLearn || !price || !tag)
-            {
+            {   
                 return res.status(400).json({
                     success : false,
                     message : "Please Fill required details!"
@@ -29,6 +29,7 @@ exports.createCourse = async (req, res) => {
             const userId = req.user.id;
             const instructorDetails = await User.findById(userId);
             console.log("Instructor Details: ", instructorDetails);
+            // Todo: Verify that userId and instructorDetails._id are same or diffrent ?
 
             if(!instructorDetails)
             {
@@ -112,12 +113,16 @@ exports.createCourse = async (req, res) => {
 
 exports.showAllCourses = async (req, res) => {
     try{
-        const allCourses = await Course.find({}, 
-                                             {courseName : true,
-                                             price : true,
-                                            instructor : true})
-                                            .populate("Instructor")
-                                            .exec();
+
+        // ToDo : change the below statement incrementally
+        const allCourses = await Course.find({}); 
+                                             
+
+        return res.status(200).json({
+            success : true,
+            message : 'Data for all courses fetched successfully',
+            data : allCourses
+        })
     }
     catch(error)
     {
