@@ -49,3 +49,46 @@ exports.createSection = async(req, res) => {
         })
     }
 }
+
+
+
+// Algorithm to update Schema
+    // fetch data
+    // validate data
+    //update data in section
+
+exports.updateSchemmaSection = async(req, res) => {
+    try{
+        const {sectionName, sectionId} = req.body;
+
+        if(!sectionName || !sectionId)
+        {
+            return res.status(400).json({
+                success : false,
+                message : "Fill all necessary Details"
+            })
+        }
+
+        const Section = await Section.findByIdAndUpdate(sectionId,
+                                                                {
+                                                                    sectionName : sectionName
+                                                                },
+                                                                {new : true}
+                                                             );
+
+        return res.status(200).json({
+            success : true,
+            message : "Section updated Successfully",
+            Section
+        })
+
+    }
+    catch(error) 
+    {
+        return res.status(500).json({
+            success : false,
+            message : "Unable to update Schema, please try again",
+            error : error.message
+        })
+    }
+}
