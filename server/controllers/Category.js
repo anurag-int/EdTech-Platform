@@ -6,7 +6,7 @@ const Tag = require("../models/tags");
         // data validation
         // create a entry in DB
         // return
-exports.createTag = async(req, res) => {
+exports.createCategory = async(req, res) => {
     try{
         
         // fetching data
@@ -45,7 +45,7 @@ exports.createTag = async(req, res) => {
 
 // getAllTags  handler function
 
-exports.showAlltags = async(req, res)=>{
+exports.showAllCategory = async(req, res)=>{
     try{
         const allTags = await Tag.find({},{name : true, description : true});
         return res.status(200).json({
