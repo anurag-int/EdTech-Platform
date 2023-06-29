@@ -92,3 +92,31 @@ exports.updateSchemmaSection = async(req, res) => {
         })
     }
 }
+
+
+// Algorithm to delete Section in Any Course
+    // get ID
+    // use findByIdAndDelete
+    // return response
+
+
+exports.deleteSection = async(req, res) => {
+    try{
+        const sectionId = req.params;
+
+        await Section.findByIdAndDelete(sectionId);
+
+        return res.status(200).json({
+            success : true,
+            message : "Section Successfully Deleted"
+        })
+    }                                 
+    catch(err)
+    {
+        return res.status(500).json({
+            success : false,
+            message : "Unable to update Schema, please try again",
+            error : err.message
+        })
+    }
+}
