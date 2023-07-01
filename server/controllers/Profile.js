@@ -55,4 +55,42 @@ exports.updateProfile = async (req, res)=>{
 }
 
 
-//
+//delete Account
+    //getID
+    //validation
+    //delete profile_details
+    //User delete
+    //return
+exports.deleteAccount = async(req, res)=>{
+    try{
+        const id = req.user.id;
+
+        const userDetails = await User.findById(id);
+
+        if(!userDetails)
+        {
+            return res.status(400).json({
+                success : false,
+                message : "User not found"
+            })
+        }
+
+        await Profile.findByIdAndDelete({_id : userDetails.additionalDetails});
+
+        await User.findByIdAndDelete({_id : id});
+
+        return res.status(200).json({
+            success : true,
+            message : "User Successfully Deleted"
+        })
+    }
+    catch(err)
+    {
+        return res.status(500).json({
+            success : false,
+            error : err.message,
+            message : "Internal Server Error!"
+        })
+    }
+}
+
