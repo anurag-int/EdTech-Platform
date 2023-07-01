@@ -2,6 +2,7 @@ const Profile = require("../models/Profile");
 const User = require("../models/User");
 const Course = require("../models/Course");
 const cron = require('node-cron');
+const { response } = require("express");
 
 //get data
 //get userId
@@ -99,3 +100,31 @@ exports.deleteAccount = async (req, res) => {
         }
     });
 };
+
+// to getALL details of Any user
+    // get id
+    // validation and get user details
+    //return response
+
+    
+exports.getAllUserDetails = async(res, res)=>{
+    try{
+        const id = req.user.id;
+
+        const userDetails = await User.findById(id).populate("additionalDetails").exec();
+
+        return res.status(200).json({
+            success : true,
+            message : "User data fetched Successfully"
+        });
+        
+
+    }
+    catch(error)
+    {
+        return res.status(500).json({
+            success : false,
+            message : "Internal Server Error"
+        })
+    }
+}
