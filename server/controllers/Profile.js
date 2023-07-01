@@ -62,7 +62,7 @@ exports.updateProfile = async (req, res)=>{
     //delete profile_details
     //User delete
     //return
-exports.deleteAccount = async(req, res)=>{
+ const deleteAccount = async (req, res) => {
     try{
         const id = req.user.id;
 
@@ -84,7 +84,7 @@ exports.deleteAccount = async(req, res)=>{
 
         return res.status(200).json({
             success : true,
-            message : "User Successfully Deleted"
+            message : "User Deleted Successfully "
         })
     }
     catch(err)
@@ -97,3 +97,6 @@ exports.deleteAccount = async(req, res)=>{
     }
 }
 
+
+
+module.exports = deleteAccount;
