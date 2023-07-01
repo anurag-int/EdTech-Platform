@@ -1,7 +1,7 @@
 const Profile = require("../models/Profile");
 const User = require("../models/User");
 const Course = require("../models/Course");
-
+const cron = require('node-cron');
 
 //get data
 //get userId
@@ -62,41 +62,40 @@ exports.updateProfile = async (req, res)=>{
     //delete profile_details
     //User delete
     //return
- const deleteAccount = async (req, res) => {
-    try{
-        const id = req.user.id;
 
-        const userDetails = await User.findById(id);
-
-        if(!userDetails)
-        {
-            return res.status(400).json({
-                success : false,
-                message : "User not found"
+exports.deleteAccount = async (req, res) => {
+    cron.schedule('0 0 */5 * *', async() => {
+        try{
+            const id = req.user.id;
+    
+            const userDetails = await User.findById(id);
+    
+            if(!userDetails)
+            {
+                return res.status(400).json({
+                    success : false,
+                    message : "User not found"
+                })
+            }
+    
+            await Course.findByIdAndDelete({_id : id});
+    
+            await Profile.findByIdAndDelete({_id : userDetails.additionalDetails});
+    
+            await User.findByIdAndDelete({_id : id});
+    
+            return res.status(200).json({
+                success : true,
+                message : "User Deleted Successfully "
             })
         }
-
-        await Course.findByIdAndDelete({_id : id});
-
-        await Profile.findByIdAndDelete({_id : userDetails.additionalDetails});
-
-        await User.findByIdAndDelete({_id : id});
-
-        return res.status(200).json({
-            success : true,
-            message : "User Deleted Successfully "
-        })
-    }
-    catch(err)
-    {
-        return res.status(500).json({
-            success : false,
-            error : err.message,
-            message : "Internal Server Error!"
-        })
-    }
-}
-
-
-
-module.exports = deleteAccount;
+        catch(err)
+        {
+            return res.status(500).json({
+                success : false,
+                error : err.message,
+                message : "Internal Server Error!"
+            })
+        }
+    });
+};
