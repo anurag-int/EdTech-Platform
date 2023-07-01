@@ -65,4 +65,7 @@ exports.createSubSection = async (req, res) => {
     }
 }
 
+// Pending Update SubSection
+// Pending deleteSubSection
+
 
