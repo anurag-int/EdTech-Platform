@@ -101,12 +101,14 @@ exports.deleteAccount = async (req, res) => {
     });
 };
 
-// to getALL details of Any user
+
+
+// a getter function to get ALL details of Any user
     // get id
     // validation and get user details
     //return response
 
-    
+
 exports.getAllUserDetails = async(res, res)=>{
     try{
         const id = req.user.id;
