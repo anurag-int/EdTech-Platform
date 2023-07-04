@@ -1,64 +1,71 @@
-const Tag = require("../models/category");
+const category = require("../models/Category");
+const Category = require("../models/Category");
 
-// createTag Algorithm
 
-        //fetch the data
-        // data validation
-        // create a entry in DB
-        // return
-exports.createCategory = async(req, res) => {
+
+// creating Category
+
+exports.createCategory = async (req, res) => {
     try{
         
-        // fetching data
-        const {name, description} = req.body;
-
-        // data validation
-        if(!name || !description)
-        {
-            return res.status(400).json({
-                success : false,
-                message : "All fields are required"
-            })
-        }
-
-        // create a entry in DB
-        const tagDetails = await Tag.create({
-            name : name,
-            description : description
-        })
-        console.log(tagDetails);
-
-        // return 
-        return res.status(200).json({
-             success : false,
-             message : "Tag Create Successfully"
-        })
     }
-    catch(error){
-        return res.status(500).json({
-            success : false,
-            message : error.message
-        })
+    catch(error)
+    {
+
     }
+}   
+
+exports.showAllCategory = async(req, res) => {
+
 }
 
 
-// getAllTags  handler function
-
-exports.showAllCategory = async(req, res)=>{
+exports.categoryPageDetails = async(req, res) => {
     try{
-        const allTags = await Tag.find({},{name : true, description : true});
+        // get CategoryId
+        const {categoryId} = req.body;
+
+        // get Course for specified Category
+        const selectedCategory = await Category.findById(categoryId)
+                                                        .populate("Courses")
+                                                        .exec()
+        
+        // validation
+        if(!selectedCategory)
+        {
+            return res.status(404).json({
+                success : false,
+                message : "Data Not Found"
+            })
+        }
+
+
+        // get course for different category where $ne = not equals
+        const differentCategories = await Category.find({
+                                                _id : {$ne : categoryId}
+                                             })
+                                             .populate("courses")
+                                             .exec()
+
+        // get top selling courses
+        
+
+        // return 
         return res.status(200).json({
             success : true,
-            message : "All tags are successfully Returned",
-            allTags
+            data : {
+                selectedCategory,
+                differentCategories
+            }
         })
     }
-    catch(err)
+    catch(error)
     {
+        console.log(error)
+        
         return res.status(500).json({
             success : false,
-            message : err.message
+            message : error.message
         })
     }
 }
