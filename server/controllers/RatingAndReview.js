@@ -77,7 +77,54 @@ exports.createRating = async (req, res) => {
 }
 
 
-//getRating
+//getAverageRating of any course
+    //get course ID
+    //calculate average Rating
+    // if rating availabe > 0 then there exists rating so return the average rating
+    // if rating availabe = 0 then return 0
+    //return rating
+
+exports.getAverageRating = async (req, res) => {
+    try{
+        const courseId = req.body.couseId;
+
+        const result = await RatingAndReview.aggregate([
+            {
+                $match : {
+                    course : new mongoose.Types.ObjectId(courseId)
+                },
+            },
+            {
+                $group : {
+                            _id : null,
+                            getAverageRating : {$avg : "$rating"}
+                }
+            }
+        ])
+
+        if(result.length > 0)
+        {
+            return res.status(200).json({
+                success : true,
+                averageRating : result[0].averageRating
+            })
+        }
+
+        return res.status(200).json({
+            success : true,
+            message : "Average Rating is 0, no rating availabe",
+            averageRating : 0
+        })
+
+    }
+    catch(error)
+    {
+        return res.status(500).json({
+            success : false,
+            message : error.message
+        })
+    }
+}
 
 
 
