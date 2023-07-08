@@ -57,7 +57,7 @@ exports.createSection = async(req, res) => {
     // validate data
     //update data in section
 
-exports.updateSchemmaSection = async(req, res) => {
+exports.updateSection = async(req, res) => {
     try{
         const {sectionName, sectionId} = req.body;
 

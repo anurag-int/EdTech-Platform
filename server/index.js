@@ -5,7 +5,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const fileUpload = require("express-fileupload");
 
-// const courseRoutes = require("./routes/Course");
+const courseRoutes = require("./routes/Course");
 const paymentRoutes = require("./routes/Payments");
 const profileRoutes = require("./routes/Profile");
 const userRoutes = require("./routes/User");
