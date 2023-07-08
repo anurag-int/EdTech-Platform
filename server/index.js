@@ -13,12 +13,16 @@ const userRoutes = require("./routes/User");
 const {cloudinaryConnect} = require("./config/cloudinary");
 cloudinaryConnect();
 
-const connect = require('./config/database');
+
+
+dotenv.config();
+
+const PORT = process.env.PORT || 4000
+
+//database connect
+const database  = require('./config/database');
 database.connect();
 
-require("dotenv").config();
-
-const PORT = 4000 || process.env.PORT;
 
 //middleware
 app.use(express.json());
@@ -51,17 +55,12 @@ app.get("/", (req, res) => {
     })
 })
 
-// listining
-app.listen(PORT, () => {
-    console.log(`App is running in ${PORT}`);
-})
-
 
 
 app.get("/", (req, res)=>{
     res.send("Welcome to the home Page");
 })
 
-app.listen(PORT,()=>{
+app.listen(PORT, ()=>{
     console.log(`Server Started on Port ${PORT}`);
 });

@@ -111,7 +111,7 @@ exports.createCourse = async (req, res) => {
 
 // getAllCourses handeler function
 
-exports.showAllCourses = async (req, res) => {
+exports.getAllCourses = async (req, res) => {
     try{
 
         // ToDo : change the below statement incrementally
