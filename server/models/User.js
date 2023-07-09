@@ -26,6 +26,14 @@ const userSchema = new mongoose.Schema({
         enum : ["Student", "Instructor", "Admin"],
         required : true
     },
+    active: {
+        type: Boolean,
+        default: true,
+    },
+    approved: {
+        type: Boolean,
+        default: true,
+    },
     additionalDetails : {
         type : mongoose.Schema.Types.ObjectId,
         required : true,
