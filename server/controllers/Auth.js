@@ -8,6 +8,7 @@ require("dotenv").config();
 const nodemailer = require("nodemailer");
 const mailSender = require("../utils/mailSender");
 const otpTemplate = require("../mail/templates/emailVerificationTemplate");
+const Profile = require("../models/Profile");
 
 //OTP sender
 exports.sendotp = async (req, res) => {
@@ -118,6 +119,7 @@ exports.signup = async (req, res) => {
 
     //validate OTP from the User's OTP
 
+
     if (recentOtp.length == 0) {
         // OTP not found
       return response.status(400).json({
@@ -126,7 +128,7 @@ exports.signup = async (req, res) => {
       });
     } 
 
-    else if (otp !== recentOtp.otp) {
+    else if (otp !== recentOtp[0].otp) {
       //Invalid OTP
       return res.status(400).json({
         success: false,
