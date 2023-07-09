@@ -1,66 +1,59 @@
 const express = require("express");
 const app = express();
+
+const userRoutes = require("./routes/User");
+const profileRoutes = require("./routes/Profile");
+const paymentRoutes = require("./routes/Payments");
+const courseRoutes = require("./routes/Course");
+
+const database = require("./config/database");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
-const dotenv = require("dotenv");
+const {cloudinaryConnect } = require("./config/cloudinary");
 const fileUpload = require("express-fileupload");
-
-const courseRoutes = require("./routes/Course");
-const paymentRoutes = require("./routes/Payments");
-const profileRoutes = require("./routes/Profile");
-const userRoutes = require("./routes/User");
-
-const {cloudinaryConnect} = require("./config/cloudinary");
-cloudinaryConnect();
-
-
+const dotenv = require("dotenv");
 
 dotenv.config();
-
-const PORT = process.env.PORT || 4000
+const PORT = process.env.PORT || 4000;
 
 //database connect
-const database  = require('./config/database');
 database.connect();
-
-
-//middleware
+//middlewares
 app.use(express.json());
-
-// cookie-parser is a middleware which parses cookies attached to the client request object. To use it, we will require it in our index. js file; this can be used the same way as we use other middleware.
 app.use(cookieParser());
-
-//cors --> used to share resoure from the another origin
 app.use(
-    cors({
-        origin:"http://localhost:3000",
-        credentials:true
-    })
+	cors({
+		origin:"http://localhost:3000",
+		credentials:true,
+	})
 )
 
-
-//temp path pending
+app.use(
+	fileUpload({
+		useTempFiles:true,
+		tempFileDir:"/tmp",
+	})
+)
+//cloudinary connection
+cloudinaryConnect();
 
 //routes
-app.use("api/v1/auth", userRoutes);
-app.use("api/v1/profile", profileRoutes);
-app.use("api/v1/payment", paymentRoutes);
-app.use("api/v1/course", courseRoutes);
+app.use("/api/v1/auth", userRoutes);
+app.use("/api/v1/profile", profileRoutes);
+app.use("/api/v1/course", courseRoutes);
+app.use("/api/v1/payment", paymentRoutes);
 
-//default route(Home)
+
+//def route
+
 app.get("/", (req, res) => {
-    return res.json({
-        success : true,
-        message : "Your Server is up and Running"
-    })
-})
-
-
-
-app.get("/", (req, res)=>{
-    res.send("Welcome to the home Page");
-})
-
-app.listen(PORT, ()=>{
-    console.log(`Server Started on Port ${PORT}`);
+	return res.json({
+		success:true,
+		message:'Your server is up and running....'
+	});
 });
+
+app.listen(PORT, () => {
+	console.log(`App is running at ${PORT}`)
+})
+

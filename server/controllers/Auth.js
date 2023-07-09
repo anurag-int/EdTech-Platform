@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const nodemailer = require("nodemailer");
 const mailSender = require("../utils/mailSender");
+const otpTemplate = require("../mail/templates/emailVerificationTemplate");
 
 //OTP sender
 exports.sendotp = async (req, res) => {
@@ -43,11 +44,14 @@ exports.sendotp = async (req, res) => {
       });
     }
 
+    
+
+
     // Storing this OTP in the DataBase.
     const otpPayload = {email, otp};
 
     // create an entry in DB for OTp
-    const otpBody = await OTP.create(optPayload);
+    const otpBody = await OTP.create(otpPayload);
     console.log(otpBody);
 
     res.status(200).json({
