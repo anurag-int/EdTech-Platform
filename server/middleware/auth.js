@@ -9,7 +9,7 @@ const User = require("../models/User");
 exports.auth = async (req, res, next) =>{
     try {
         // extract token
-        const token = req.cookie.token || req.body.token || req.header("Authorisation").replace("Bearer", "");
+        const token = req.cookies.token || req.body.token || req.header("Authorisation").replace("Bearer", "");
 
         // if token missing, then return the response
 
@@ -37,6 +37,7 @@ exports.auth = async (req, res, next) =>{
     }
     catch(error)
     {
+        console.log(error);
         return res.status(401).json({
             success : false,
             message : "Something went wrong while valididating the token"
@@ -73,7 +74,7 @@ exports.isInstructor = async(req, res, next)=>{
             if(req.user.accountType !== "Instructor"){
                 return res.status(401).json({
                     success : false,
-                    message : "This is a Protected route for Instructor only"
+                    message : "This is a Protected route for Instructor only" 
                 })
             }
             next();

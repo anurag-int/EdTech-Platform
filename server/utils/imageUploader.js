@@ -1,15 +1,15 @@
 const cloudinary = require('cloudinary').v2;
 
 
-exports.uploadImageToCloudinary = async(file, folder) => {
+exports.uploadImageToCloudinary = async(file, folder, height, quality) => {
     try{
             const options = {folder};
             if(height){
-                options.quality = quality;
+                options.height = height;
             }
             if(quality)
             {
-                options.quality = MAIL_USER
+                options.quality = quality;
             }
             options.resource_type = "auto";
     

@@ -29,7 +29,7 @@ const {auth, isInstructor, isStudent, isAdmin} = require("../middleware/auth");
 // ********************************************************************************************************
 
 
-// Courses can Only be Created by Instructors  
+// Courses can Only be Created by Instructors  \
 router.post("/createCourse", auth, isInstructor, createCourse);
 router.post("/addSection", auth, isInstructor, createSection);
 router.post("/updateSection", auth, isInstructor, updateSection);
