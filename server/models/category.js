@@ -1,20 +1,19 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const categorySchema = mongoose.Schema({
-    name : {
-        type : String,
-        required : true
-    },
-    description : {
-        type : String
-    },
-    courses : [
-        {
-            type : mongoose.Schema.Types.ObjectId,
-            ref : "Course"   
-        }
-    ] 
+// Define the Tags schema
+const categorySchema = new mongoose.Schema({
+	name: {
+		type: String,
+		required: true,
+	},
+	description: { type: String },
+	courses: [
+		{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Course",
+		},
+	],
+});
 
-})
-
-module.exports = mongoose.model("category", categorySchema)
+// Export the Tags model
+module.exports = mongoose.model("Category", categorySchema);
